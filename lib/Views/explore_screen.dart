@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:topic/Views/card_image.dart';
 import 'package:topic/Views/list_article_by_category.dart';
 import 'package:topic/models/article_model.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
@@ -21,28 +20,22 @@ class _ExploreScreenState extends State<ExploreScreen> {
     "IA Générative"
   ];
   final List<String> explores = [
+    "Design UX",
     "football",
+    "C#",
     "Biologie de synthèse",
-    "IA Générative",
-    "football",
-    "Biologie de synthèse",
-    "IA Générative",
+    "Réalité augmentée",
+    "Mode été 2024",
+    "Cerveau social",
+    "Psychologie positive",
   ];
   Future<void> fetchAndDisplayArticles(List<String> interests) async {
-    // Génération des URLs pour les différentes catégories
-    // String recentUrl = generateUrl(interests, 'recent');
     String popularUrl = generateUrl(interests, 'popular');
-    // String todayUrl = generateUrl(interests, 'today');
-
-    // Récupération des articles
-    // recentArticles = fetchArticles(recentUrl);
     popularArticles = fetchArticles(popularUrl);
-    // todayArticles = fetchArticles(todayUrl);
   }
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     fetchAndDisplayArticles(interets);
   }
@@ -51,19 +44,25 @@ class _ExploreScreenState extends State<ExploreScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('EXPLORER'),
+        title: const Text(
+          'Explorer',
+          style: TextStyle(color: Colors.purple, fontWeight: FontWeight.bold),
+        ),
       ),
       body: SingleChildScrollView(
         scrollDirection: Axis.vertical,
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.only(left: 16, right: 16),
+              padding: const EdgeInsets.all(16),
               child: Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(30),
                   gradient: const LinearGradient(
-                    colors: [Colors.blue, Colors.purple],
+                    colors: [
+                      Color.fromARGB(165, 33, 149, 243),
+                      Color.fromARGB(129, 155, 39, 176)
+                    ],
                     begin: Alignment.centerLeft,
                     end: Alignment.centerRight,
                   ),
@@ -85,21 +84,20 @@ class _ExploreScreenState extends State<ExploreScreen> {
                       icon: const Icon(Icons.filter_list, color: Colors.white),
                       onPressed: () {
                         // Action à réaliser lors du clic sur le bouton de filtrage
-                        print('Bouton de filtrage cliqué');
+                        // print('Bouton de filtrage cliqué');
                       },
                     ),
                   ],
                 ),
               ),
             ),
-            ListTile(
-              title: const Text("Populaire en ce moment"),
-              trailing: TextButton(
-                child: const Text('Plus'),
-                onPressed: () {},
+            const ListTile(
+              title: Text(
+                "Populaire",
+                style: TextStyle(fontWeight: FontWeight.bold),
               ),
             ),
-            Container(
+            SizedBox(
               height: 230,
               child: FutureBuilder<List<Article>>(
                 future: popularArticles,
@@ -129,11 +127,12 @@ class _ExploreScreenState extends State<ExploreScreen> {
               ),
             ),
             const ListTile(
-              title: Text("Explorer"),
+              title: Text("Explorer",
+                  style: TextStyle(fontWeight: FontWeight.bold)),
             ),
             Container(
               height: 400,
-              margin: const EdgeInsets.all(16),
+              margin: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
               child: MasonryGridView.count(
                   crossAxisCount: 2,
                   mainAxisSpacing: 4,
@@ -142,12 +141,26 @@ class _ExploreScreenState extends State<ExploreScreen> {
                   itemBuilder: (context, index) {
                     return GestureDetector(
                       child: Container(
-                        height: 50,
-                        child: Text(
-                          explores[index].toUpperCase(),
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(5),
+                            image: DecorationImage(
+                              image: AssetImage('assets/images/a ($index).jpg'),
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                          height: 100,
+                          child: Container(
+                            alignment: Alignment.center,
+                            color: const Color.fromARGB(113, 23, 53, 85),
+                            child: Text(
+                              explores[index].toUpperCase(),
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          )),
                       onTap: () {
                         Navigator.push(
                           context,
@@ -172,13 +185,16 @@ class ImageCarda extends StatelessWidget {
   final String subtitle;
   final String imageUrl;
 
-  ImageCarda(
-      {required this.title, required this.subtitle, required this.imageUrl});
+  const ImageCarda(
+      {super.key,
+      required this.title,
+      required this.subtitle,
+      required this.imageUrl});
 
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: EdgeInsets.all(10),
+      margin: const EdgeInsets.all(10),
       child: Stack(
         children: [
           Image.network(
@@ -192,14 +208,14 @@ class ImageCarda extends StatelessWidget {
               left: 0,
               right: 0,
               child: Container(
-                padding: EdgeInsets.all(10),
+                padding: const EdgeInsets.all(10),
                 color: Colors.white24,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       title,
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: Colors.white,
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
@@ -220,37 +236,3 @@ class ImageCarda extends StatelessWidget {
     );
   }
 }
-/*
-FutureBuilder<List<Article>>(
-        future: articles,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(child: Text('No articles found'));
-          } else {
-            final articles = snapshot.data!;
-            return ListView.builder(
-              itemCount: articles.length,
-              itemBuilder: (context, index) {
-                final article = articles[index];
-                return ListTile(
-                  title: Text(article.title),
-                  subtitle: Text(article.description),
-                  onTap: () {},
-                  //=> _launchURL(article.url)
-                );
-              },
-            );
-          }
-        },
-         void _launchURL(String url) async {
-    if (await canLaunch(url)) {
-      await launch(url);
-    } else {
-      throw 'Could not launch $url';
-    }
-  }
- */

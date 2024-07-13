@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 
 class Article {
   final String title;
@@ -19,16 +20,16 @@ class Article {
   });
 
   factory Article.fromJson(Map<String, dynamic> json) {
-    String today = DateTime.now().toIso8601String().substring(0, 10);
-    String date =
-        "${DateTime.tryParse(json['publishedAt'])!.day}/${DateTime.tryParse(json['publishedAt'])!.month}";
+    DateTime givenDate = DateFormat('yyyy-MM-dd').parse(json['publishedAt']);
+    DateTime today = DateTime.now();
+    int differenceInDays = today.difference(givenDate).inDays;
     return Article(
       title: json['title'].toString(),
       image: json['urlToImage'].toString(),
-      description: json['description'].toString(),
+      description: json['content'].toString(),
       url: json['url'].toString(),
       source: json['source']['name'].toString(),
-      date: date,
+      date: "$differenceInDays j",
     );
   }
 
@@ -69,6 +70,7 @@ Future<List<Article>> fetchArticles(String url) async {
   if (response.statusCode == 200) {
     final jsonResponse = json.decode(response.body);
     final articlesJson = jsonResponse['articles'] as List;
+    await Future.delayed(const Duration(seconds: 2));
 
     return articlesJson.map((json) => Article.fromJson(json)).toList();
   } else {
@@ -85,7 +87,7 @@ Future<List<Article>> fetchArticlesBy(String query) async {
   if (response.statusCode == 200) {
     final jsonResponse = json.decode(response.body);
     final articlesJson = jsonResponse['articles'] as List;
-    await Future.delayed(Duration(seconds: 2));
+    await Future.delayed(const Duration(seconds: 2));
     return articlesJson.map((json) => Article.fromJson(json)).toList();
   } else {
     throw Exception('Failed to load articles');

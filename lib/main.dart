@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:topic/Views/explore_screen.dart';
-import 'package:topic/Views/feed_screen.dart';
 import 'package:topic/Views/message_screen.dart';
 import 'package:topic/Views/profil_screen.dart';
+import 'package:topic/Views/feed_screen.dart';
 import 'routers.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
   runApp(const MyApp());
 }
 
@@ -18,9 +20,6 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(primarySwatch: Colors.blue),
       routerConfig: routes,
-      // theme: ThemeData.dark(),
-      //routerDelegate: routes.routerDelegate,
-      //routeInformationParser: routes.routeInformationParser,
     );
   }
 }
@@ -35,6 +34,8 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
   final screens = [
+    //LogIn(),
+    //WebViewScreen(),
     const FeedScreen(),
     const MessageScreen(),
     const ExploreScreen(),
@@ -45,6 +46,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: screens[_selectedIndex],
+      //body: HomeScreen(),
       floatingActionButtonLocation:
           FloatingActionButtonLocation.miniCenterDocked,
       bottomNavigationBar: _customBottomNav(context),
@@ -55,12 +57,12 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget _customBottomNav(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(10),
-      margin: EdgeInsets.all(10),
+      margin: const EdgeInsets.all(10),
       height: 50,
-      decoration: BoxDecoration(
-          //color: Colors.lightBlue,
-          border: Border.all(style: BorderStyle.solid, color: Colors.white),
-          borderRadius: const BorderRadius.all(Radius.circular(20))),
+      //decoration: BoxDecoration(
+      // color: Colors.lightBlue,
+      // border: Border.all(style: BorderStyle.solid, color: Colors.purple),
+      //borderRadius: const BorderRadius.all(Radius.circular(20))),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -82,10 +84,9 @@ class _MyHomePageState extends State<MyHomePage> {
         },
         icon: Icon(
           icon,
-          color: index == _selectedIndex
-              ? Colors.purple
-              : Color.fromARGB(170, 33, 149, 243),
+          color: index == _selectedIndex ? Colors.purple : Colors.grey,
           size: index == _selectedIndex ? 27 : 25,
+          weight: 5.0,
         ));
   }
 }

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "347203704755",
+    "project_id": "topicfocus-efafc",
+    "storage_bucket": "topicfocus-efafc.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:347203704755:android:5299a293dd77f920ab9dc6",
+        "android_client_info": {
+          "package_name": "com.example.topic"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBmV-3qTE_UK4C9fWpnz_0rRn1EbQbkiE0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
