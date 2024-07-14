@@ -19,7 +19,7 @@ class DBHelper {
       ''');
 
       final List<Article> articles = await fetchArticles(
-              "(psychologie OR biologie OR football OR mode IA OR )")
+              "(psychologie OR biologie OR football OR mode OR IA)")
           .then((value) => filterArticles(value));
       articles.forEach((article) {
         insertArticle(article);
