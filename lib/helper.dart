@@ -19,7 +19,11 @@ class DBHelper {
       ''');
 
       final List<Article> articles = await fetchArticles(
+<<<<<<< HEAD
               "(football OR euro 2024 OR IA génerative OR psychologie cognitive)")
+=======
+              "(psychologie OR biologie OR football OR mode OR IA)")
+>>>>>>> 05472ee5bec7364b1903da4faa0650db1d92e712
           .then((value) => filterArticles(value));
       articles.forEach((article) {
         insertArticle(article);
