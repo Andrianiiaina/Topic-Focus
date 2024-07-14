@@ -11,15 +11,15 @@ class ExploreScreen extends StatefulWidget {
   State<ExploreScreen> createState() => _ExploreScreenState();
 }
 
-final List<String> explores = [
-  "Design UX",
-  "football",
-  "C#",
-  "Biologie de synthèse",
-  "Réalité augmentée",
-  "Mode été 2024",
-  "Cerveau social",
-  "Psychologie positive",
+final List<Map<String, String>> explores = [
+  {'technologie': 'IA'},
+  {'sport': 'santé'},
+  {'c#': 'technologie'},
+  {'Biologie de synthèse': 'santé'},
+  {'Réalité augmentée': 'science'},
+  {'Mode été 2024': 'technologie'},
+  {'Cerveau social': 'technologie'},
+  {'Psychologie positive': 'psychologie'},
 ];
 
 class _ExploreScreenState extends State<ExploreScreen> {
@@ -73,6 +73,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
                   children: [
                     Expanded(
                       child: TextField(
+                        autofocus: true,
                         controller: q,
                         decoration: const InputDecoration(
                           hintText: 'Recherche...',
@@ -152,28 +153,26 @@ class _ExploreScreenState extends State<ExploreScreen> {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(5),
             image: DecorationImage(
-              image: AssetImage('assets/images/a ($index).jpg'),
-              fit: BoxFit.cover
-            ),
+                image: AssetImage('assets/images/a ($index).jpg'),
+                fit: BoxFit.cover),
           ),
           height: 100,
           child: Container(
             alignment: Alignment.center,
             color: const Color.fromARGB(113, 23, 53, 85),
-            child: Text(
-              explores[index].toUpperCase(),
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold)
-            ),
+            child: Text(explores[index].keys.toString(),
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold)),
           )),
       onTap: () {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: ((context) => ListArticleBy(query: explores[index])),
+            builder: ((context) =>
+                ListArticleBy(query: explores[index].values.first.toString())),
           ),
         );
       },

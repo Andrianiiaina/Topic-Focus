@@ -1,7 +1,7 @@
 import 'package:sqflite/sqflite.dart';
 import 'models/article_model.dart';
 
-const String path = 'aclsyy.db';
+const String path = 'ehsttfgyst.db';
 
 class DBHelper {
   initializeDB() async {
@@ -19,7 +19,7 @@ class DBHelper {
       ''');
 
       final List<Article> articles = await fetchArticles(
-              "(psychologie OR biologie OR football OR mode IA OR )")
+              "(football OR euro 2024 OR IA génerative OR psychologie cognitive)")
           .then((value) => filterArticles(value));
       articles.forEach((article) {
         insertArticle(article);

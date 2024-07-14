@@ -84,21 +84,12 @@ class _ListArticleByState extends State<ListArticleBy> {
                                             horizontal: 10),
                                         child: Row(children: <Widget>[
                                           Text(
-                                            "${article.date} j",
+                                            article.date == '1'
+                                                ? "il y a ${article.date} jour"
+                                                : "il y a ${article.date} jours",
                                             style: const TextStyle(
                                                 fontStyle: FontStyle.italic,
                                                 fontSize: 12),
-                                          ),
-                                          ListTile(
-                                            title: Text(
-                                              article.title.toString(),
-                                              style: const TextStyle(
-                                                  fontSize: 16,
-                                                  fontWeight: FontWeight.bold),
-                                            ),
-                                            subtitle: Text(article.date == '1'
-                                                ? "il y a ${article.date} jour"
-                                                : "il y a ${article.date} jours"),
                                           ),
                                           IconButton(
                                             icon: const Icon(Icons.share),

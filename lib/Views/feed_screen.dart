@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../models/article_model.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:topic/helper.dart';
@@ -33,6 +34,44 @@ class _FeedScreenState extends State<FeedScreen> {
         ),
         body: Column(
           children: [
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(30),
+                  gradient: const LinearGradient(
+                    colors: [
+                      Color.fromARGB(165, 33, 149, 243),
+                      Color.fromARGB(129, 155, 39, 176)
+                    ],
+                    begin: Alignment.centerLeft,
+                    end: Alignment.centerRight,
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        decoration: const InputDecoration(
+                          hintText: 'Recherche...',
+                          hintStyle: TextStyle(color: Colors.white),
+                          border: InputBorder.none,
+                          contentPadding: EdgeInsets.symmetric(horizontal: 20),
+                        ),
+                        style: const TextStyle(color: Colors.white),
+                        onTap: () {
+                          context.go('/explore');
+                        },
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.filter_list, color: Colors.white),
+                      onPressed: () {},
+                    ),
+                  ],
+                ),
+              ),
+            ),
             SizedBox(
               height: 40,
               child: ListView.builder(
@@ -104,7 +143,7 @@ class _FeedScreenState extends State<FeedScreen> {
               title: Text(
                 article.title.toString(),
                 style:
-                    const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    const TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
               ),
               subtitle: Text(article.date == '1'
                   ? "il y a ${article.date} jour"

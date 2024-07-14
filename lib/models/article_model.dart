@@ -32,11 +32,12 @@ class Article {
 
   static List<String> interets = [
     "IA",
-    "football",
     "psychologie",
-    "biologie",
-    "quantique",
+    "technologie",
+    "science",
+    "santé",
   ];
+
   // Convertir un Map en article
   Article.fromMap(Map<String, dynamic> map)
       : title = map['title'],
@@ -73,7 +74,7 @@ Future<void> openBrowser(String url) async {
 Future<List<Article>> fetchArticles(String q) async {
   String apikey = "cc7e05da68ed43b6895773e3d1161727";
   final url =
-      'https://newsapi.org/v2/everything?q=$q&sortBy=publishedAt&language=fr&pageSize=70&apiKey=$apikey';
+      'https://newsapi.org/v2/everything?q=$q&sortBy=publishedAt&language=fr&pageSize=60&apiKey=$apikey';
 
   final response = await http.get(Uri.parse(url));
   if (response.statusCode == 200) {
