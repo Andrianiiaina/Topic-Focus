@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/article_model.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:flutter/services.dart';
+import 'package:topic/helper.dart';
 
 class FeedScreen extends StatefulWidget {
   const FeedScreen({super.key});
@@ -12,16 +12,14 @@ class FeedScreen extends StatefulWidget {
 
 class _FeedScreenState extends State<FeedScreen> {
   late Future<List<Article>> articles;
-  //late List<bool> favoriteStates;
-  final List<String> interets = [
-    "Biologie de synthèse",
-    "IA Générative",
-    "Psychologie cognitive"
-  ];
+  List<bool> favoriteStates = [];
+
+  final handler = DBHelper();
   @override
   void initState() {
     super.initState();
-    articles = fetchArticles('publishedAt', interets);
+    articles = handler.getArticles();
+    favoriteStates = false_values(100);
   }
 
   @override
@@ -38,7 +36,7 @@ class _FeedScreenState extends State<FeedScreen> {
             SizedBox(
               height: 40,
               child: ListView.builder(
-                  itemCount: interets.length,
+                  itemCount: Article.interets.length,
                   scrollDirection: Axis.horizontal,
                   itemBuilder: (c, i) {
                     return GestureDetector(
@@ -50,14 +48,15 @@ class _FeedScreenState extends State<FeedScreen> {
                         padding: const EdgeInsets.all(5),
                         margin: const EdgeInsets.all(5),
                         child: Text(
-                          "#${interets[i]}",
+                          "#${Article.interets[i]}",
                           style: const TextStyle(
                               fontSize: 12, color: Colors.white),
                         ),
                       ),
                       onTap: () {
                         setState(() {
-                          articles = fetchArticlesBy(interets[i]);
+                          articles = handler.searchInDatabase(
+                              Article.interets[i].toLowerCase());
                         });
                       },
                     );
@@ -66,7 +65,7 @@ class _FeedScreenState extends State<FeedScreen> {
             Expanded(
               flex: 10,
               child: FutureBuilder<List<Article>>(
-                  future: articles.then((value) => filterArticles(value)),
+                  future: articles,
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return const Center(child: CircularProgressIndicator());
@@ -107,10 +106,9 @@ class _FeedScreenState extends State<FeedScreen> {
                 style:
                     const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
-              subtitle: Text(
-                "il y a ${article.date} jours.",
-                style: TextStyle(fontStyle: FontStyle.italic, fontSize: 12),
-              ),
+              subtitle: Text(article.date == '1'
+                  ? "il y a ${article.date} jour"
+                  : "il y a ${article.date} jours"),
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 2.0),
@@ -118,12 +116,6 @@ class _FeedScreenState extends State<FeedScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   IconButton(
-                    icon: const Icon(Icons.favorite_border),
-                    onPressed: () {
-                      // Action à réaliser lors du clic sur le bouton Partager
-                    },
-                  ),
-                  /** IconButton(
                     icon: Icon(
                       favoriteStates[index]
                           ? Icons.favorite
@@ -134,10 +126,8 @@ class _FeedScreenState extends State<FeedScreen> {
                       setState(() {
                         favoriteStates[index] = !favoriteStates[index];
                       });
-                    }
-                    ,
-                  ), 
-                  */
+                    },
+                  ),
                   IconButton(icon: const Icon(Icons.share), onPressed: () {}),
                   IconButton(
                       icon: const Icon(Icons.watch_later), onPressed: () {}),

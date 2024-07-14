@@ -4,11 +4,11 @@ import 'package:topic/Views/message_screen.dart';
 import 'package:topic/Views/profil_screen.dart';
 import 'package:topic/Views/feed_screen.dart';
 import 'routers.dart';
-//import 'helper.dart';
+import 'helper.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  //DBHelper().initializeDB();
+  DBHelper().initializeDB();
 
   runApp(const MyApp());
 }

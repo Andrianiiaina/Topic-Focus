@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../models/article_model.dart';
+import 'package:topic/helper.dart';
 
 class ListArticleBy extends StatefulWidget {
   final String query;
@@ -12,10 +13,15 @@ class ListArticleBy extends StatefulWidget {
 
 class _ListArticleByState extends State<ListArticleBy> {
   late Future<List<Article>> articles;
+
+  final handler = DBHelper();
+  List<bool> favoriteStates = [];
   @override
   void initState() {
     super.initState();
-    articles = fetchArticlesBy(widget.query);
+    articles = handler.searchInDatabase(widget.query.toLowerCase());
+
+    favoriteStates = false_values(100);
   }
 
   @override
@@ -79,16 +85,20 @@ class _ListArticleByState extends State<ListArticleBy> {
                                         child: Row(children: <Widget>[
                                           Text(
                                             "${article.date} j",
-                                            style: TextStyle(
+                                            style: const TextStyle(
                                                 fontStyle: FontStyle.italic,
                                                 fontSize: 12),
                                           ),
-                                          IconButton(
-                                            icon: const Icon(
-                                                Icons.favorite_border),
-                                            onPressed: () {
-                                              // Logique pour le like
-                                            },
+                                          ListTile(
+                                            title: Text(
+                                              article.title.toString(),
+                                              style: const TextStyle(
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.bold),
+                                            ),
+                                            subtitle: Text(article.date == '1'
+                                                ? "il y a ${article.date} jour"
+                                                : "il y a ${article.date} jours"),
                                           ),
                                           IconButton(
                                             icon: const Icon(Icons.share),

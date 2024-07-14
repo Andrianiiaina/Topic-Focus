@@ -8,32 +8,44 @@ class Article {
   final String image;
   final String url;
   final String date;
-
+  final String description;
+  dynamic stockage;
   Article({
     required this.title,
     required this.image,
     required this.url,
+    required this.description,
     required this.date,
+    this.stockage,
   });
-  /**
-     * // Convertir un article en Map
-      Map<String, dynamic> toMap() {
-        return {
-          'title': title,
-          'image': image,
-          'url': url,
-          'date': date,
-        };
-      }
+  // Convertir un article en Map
+  Map<String, dynamic> toMap() {
+    return {
+      'title': title,
+      'image': image,
+      'url': url,
+      'description': description,
+      'date': date,
+      'stockage': DateTime.now().toIso8601String().split('T')[0].toString(),
+    };
+  }
 
-      // Convertir un Map en article
-      Article.fromMap(Map<String, dynamic> map)
-          : title = map['title'],
-            image = map['imageUrl'],
-            url = map['url'],
-            date = map['date'];
+  static List<String> interets = [
+    "IA",
+    "football",
+    "psychologie",
+    "biologie",
+    "quantique",
+  ];
+  // Convertir un Map en article
+  Article.fromMap(Map<String, dynamic> map)
+      : title = map['title'],
+        image = map['image'],
+        url = map['url'],
+        description = map['description'],
+        date = map['date'],
+        stockage = map['stockage'];
 
-    */
   factory Article.fromJson(Map<String, dynamic> json) {
     DateTime givenDate = DateFormat('yyyy-MM-dd').parse(json['publishedAt']);
     DateTime today = DateTime.now();
@@ -42,6 +54,7 @@ class Article {
       title: json['title'].toString(),
       image: json['urlToImage'].toString(),
       url: json['url'].toString(),
+      description: json['content'].toString(),
       date: "$differenceInDays",
     );
   }
@@ -57,12 +70,10 @@ Future<void> openBrowser(String url) async {
   }
 }
 
-Future<List<Article>> fetchArticles(
-    String sorted, List<String> interests) async {
+Future<List<Article>> fetchArticles(String q) async {
   String apikey = "cc7e05da68ed43b6895773e3d1161727";
-  String query = interests.join(' OR ');
   final url =
-      'https://newsapi.org/v2/everything?q=$query&sortBy=publishedAt&language=en&pageSize=10&apiKey=$apikey';
+      'https://newsapi.org/v2/everything?q=$q&sortBy=publishedAt&language=fr&pageSize=70&apiKey=$apikey';
 
   final response = await http.get(Uri.parse(url));
   if (response.statusCode == 200) {
@@ -70,23 +81,6 @@ Future<List<Article>> fetchArticles(
     final articlesJson = jsonResponse['articles'] as List;
     await Future.delayed(const Duration(seconds: 2));
 
-    return articlesJson.map((json) => Article.fromJson(json)).toList();
-  } else {
-    throw Exception('Failed to load articles');
-  }
-}
-
-Future<List<Article>> fetchArticlesBy(String query) async {
-  //final response = await http.get(Uri.parse(url));
-  String apiKey = "cc7e05da68ed43b6895773e3d1161727";
-  final url =
-      'https://newsapi.org/v2/everything?q=$query&sortBy=publishedAt&pageSize=10&apiKey=$apiKey';
-  final response = await http.get(Uri.parse(url));
-  if (response.statusCode == 200) {
-    final jsonResponse = json.decode(response.body);
-    final articlesJson = jsonResponse['articles'] as List;
-
-    await Future.delayed(const Duration(seconds: 2));
     return articlesJson.map((json) => Article.fromJson(json)).toList();
   } else {
     throw Exception('Failed to load articles');
@@ -110,4 +104,8 @@ Future<bool> test(String url) async {
     return false;
   }
   return false;
+}
+
+List<bool> false_values(int length) {
+  return List<bool>.filled(length, false);
 }

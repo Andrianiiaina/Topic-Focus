@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:topic/Views/list_article_by_category.dart';
 import 'package:topic/models/article_model.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:topic/helper.dart';
 
 class ExploreScreen extends StatefulWidget {
   const ExploreScreen({super.key});
@@ -10,27 +11,25 @@ class ExploreScreen extends StatefulWidget {
   State<ExploreScreen> createState() => _ExploreScreenState();
 }
 
+final List<String> explores = [
+  "Design UX",
+  "football",
+  "C#",
+  "Biologie de synthèse",
+  "Réalité augmentée",
+  "Mode été 2024",
+  "Cerveau social",
+  "Psychologie positive",
+];
+
 class _ExploreScreenState extends State<ExploreScreen> {
-  late Future<List<Article>> popularArticles;
-  final List<String> interets = [
-    "football",
-    "Biologie de synthèse",
-    "IA Générative"
-  ];
-  final List<String> explores = [
-    "Design UX",
-    "football",
-    "C#",
-    "Biologie de synthèse",
-    "Réalité augmentée",
-    "Mode été 2024",
-    "Cerveau social",
-    "Psychologie positive",
-  ];
+  late Future<List<Article>> populararticles;
+
+  final handler = DBHelper();
   @override
   void initState() {
     super.initState();
-    popularArticles = fetchArticles('popular', interets);
+    populararticles = handler.getArticles();
   }
 
   _search(String q) {
@@ -44,7 +43,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final TextEditingController _q = TextEditingController();
+    final TextEditingController q = TextEditingController();
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -74,14 +73,14 @@ class _ExploreScreenState extends State<ExploreScreen> {
                   children: [
                     Expanded(
                       child: TextField(
-                        controller: _q,
-                        decoration: InputDecoration(
+                        controller: q,
+                        decoration: const InputDecoration(
                           hintText: 'Recherche...',
                           hintStyle: TextStyle(color: Colors.white),
                           border: InputBorder.none,
                           contentPadding: EdgeInsets.symmetric(horizontal: 20),
                         ),
-                        style: TextStyle(color: Colors.white),
+                        style: const TextStyle(color: Colors.white),
                         onSubmitted: _search,
                       ),
                     ),
@@ -102,7 +101,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
             SizedBox(
               height: 230,
               child: FutureBuilder<List<Article>>(
-                future: popularArticles,
+                future: populararticles.then((value) => value.take(5).toList()),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());
@@ -118,7 +117,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
                       itemBuilder: (context, index) {
                         final Article article = articles[index];
                         // return CardHorizontal(article);
-                        return ImageCarda(article: article);
+                        return PopularCard(article);
                       },
                     );
                   }
@@ -138,38 +137,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
                   crossAxisSpacing: 4,
                   itemCount: explores.length,
                   itemBuilder: (context, index) {
-                    return GestureDetector(
-                      child: Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(5),
-                            image: DecorationImage(
-                              image: AssetImage('assets/images/a ($index).jpg'),
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                          height: 100,
-                          child: Container(
-                            alignment: Alignment.center,
-                            color: const Color.fromARGB(113, 23, 53, 85),
-                            child: Text(
-                              explores[index].toUpperCase(),
-                              textAlign: TextAlign.center,
-                              style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                          )),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: ((context) =>
-                                ListArticleBy(query: explores[index])),
-                          ),
-                        );
-                      },
-                    );
+                    return CardExplorer(index);
                   }),
             ),
           ],
@@ -177,15 +145,42 @@ class _ExploreScreenState extends State<ExploreScreen> {
       ),
     );
   }
-}
 
-class ImageCarda extends StatelessWidget {
-  final Article article;
+  Widget CardExplorer(int index) {
+    return GestureDetector(
+      child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(5),
+            image: DecorationImage(
+              image: AssetImage('assets/images/a ($index).jpg'),
+              fit: BoxFit.cover
+            ),
+          ),
+          height: 100,
+          child: Container(
+            alignment: Alignment.center,
+            color: const Color.fromARGB(113, 23, 53, 85),
+            child: Text(
+              explores[index].toUpperCase(),
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold)
+            ),
+          )),
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: ((context) => ListArticleBy(query: explores[index])),
+          ),
+        );
+      },
+    );
+  }
 
-  const ImageCarda({super.key, required this.article});
-
-  @override
-  Widget build(BuildContext context) {
+  Widget PopularCard(article) {
     return GestureDetector(
       child: Card(
         margin: const EdgeInsets.all(10),
@@ -208,23 +203,21 @@ class ImageCarda extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       ListTile(
-                        title: Text(
-                          article.title.toString(),
-                          style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                              shadows: [
-                                Shadow(
-                                  blurRadius: 10.0,
-                                  color: Colors.black,
-                                  offset: Offset(2.0, 2.0),
-                                ),
-                              ]),
-                        ),
+                        title: Text(article.title.toString(),
+                            maxLines: 3,
+                            style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                                shadows: [
+                                  Shadow(
+                                      blurRadius: 10.0,
+                                      color: Colors.black,
+                                      offset: Offset(2.0, 2.0))
+                                ])),
                         subtitle: Text(
                           "il y a ${article.date} jours.",
-                          style: TextStyle(
+                          style: const TextStyle(
                               fontStyle: FontStyle.italic,
                               fontSize: 12,
                               color: Colors.white),
