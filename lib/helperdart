@@ -1,0 +1,37 @@
+import 'package:sqflite/sqflite.dart';
+import 'models/article_model.dart';
+
+final String path = 'articles.db';
+
+class DBHelper {
+  initializeDB() async {
+    return openDatabase(path, version: 1, onCreate: (database, version) async {
+      await database.execute('''
+        CREATE TABLE articles(
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          title TEXT,
+          image TEXT,
+          url TEXT,
+          date TEXT
+        )
+      ''');
+      print(
+          '666666666666666666666666666666666666666666666666666666666666666666666666666666666666');
+      //insert articles aveo
+      database.close();
+    });
+  }
+
+  static Future<int> insertArticle(Article article) async {
+    final Database db = await openDatabase(path);
+    return await db.insert('articles', article.toMap());
+  }
+
+  static Future<List<Article>> getArticles() async {
+    final Database db = await openDatabase(path);
+    final List<Map<String, dynamic>> maps = await db.query('articles');
+    return List.generate(maps.length, (i) {
+      return Article.fromMap(maps[i]);
+    });
+  }
+}

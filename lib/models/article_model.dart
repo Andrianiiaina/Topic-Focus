@@ -1,24 +1,39 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:flutter/services.dart';
 
 class Article {
   final String title;
-  final String description;
   final String image;
   final String url;
-  final String source;
   final String date;
 
   Article({
     required this.title,
     required this.image,
-    required this.description,
     required this.url,
-    required this.source,
     required this.date,
   });
+  /**
+     * // Convertir un article en Map
+      Map<String, dynamic> toMap() {
+        return {
+          'title': title,
+          'image': image,
+          'url': url,
+          'date': date,
+        };
+      }
 
+      // Convertir un Map en article
+      Article.fromMap(Map<String, dynamic> map)
+          : title = map['title'],
+            image = map['imageUrl'],
+            url = map['url'],
+            date = map['date'];
+
+    */
   factory Article.fromJson(Map<String, dynamic> json) {
     DateTime givenDate = DateFormat('yyyy-MM-dd').parse(json['publishedAt']);
     DateTime today = DateTime.now();
@@ -26,47 +41,30 @@ class Article {
     return Article(
       title: json['title'].toString(),
       image: json['urlToImage'].toString(),
-      description: json['content'].toString(),
       url: json['url'].toString(),
-      source: json['source']['name'].toString(),
-      date: "$differenceInDays j",
+      date: "$differenceInDays",
     );
   }
-
-/**
- *   static List<Article> articles = [
-    Article(
-        title: 'The Future of Generative AI: Innovations and Challenges',
-        description:
-            'An in-depth analysis of the current state and future potential of generative AI technologies.',
-        image: 'assets/images/aa (1).jpg',
-        url: 'https://example.com/future-of-generative-ai'),
-    Article(
-        title: 'Synthetic Biology: Designing Life from Scratch',
-        description:
-            'Exploring the groundbreaking advancements in synthetic biology and its implications for the future.',
-        image: 'assets/images/aa (2).jpg',
-        url: 'https://example.com/synthetic-biology'),
-    Article(
-        title: 'The Evolution of Football: A Game of Strategy and Skill',
-        description:
-            'A comprehensive look at the history and evolution of football, from its origins to the modern game.',
-        image: 'assets/images/aa (3).jpg',
-        url: 'https://example.com/evolution-of-football'),
-    Article(
-        title: 'Generative AI in Creative Industries',
-        description:
-            'How generative AI is transforming creative industries such as art, music, and design.',
-        image: 'assets/images/aa (4).jpg',
-        url: 'https://example.com/generative-ai-creative-industries')
-  ];
- */
 }
 
-Future<List<Article>> fetchArticles(String url) async {
+const platform = MethodChannel('com.example.topic/browser');
+
+Future<void> openBrowser(String url) async {
+  try {
+    await platform.invokeMethod('openBrowser', {'url': url});
+  } on PlatformException catch (e) {
+    print("Failed to open browser: '${e.message}'.");
+  }
+}
+
+Future<List<Article>> fetchArticles(
+    String sorted, List<String> interests) async {
+  String apikey = "cc7e05da68ed43b6895773e3d1161727";
+  String query = interests.join(' OR ');
+  final url =
+      'https://newsapi.org/v2/everything?q=$query&sortBy=publishedAt&language=en&pageSize=10&apiKey=$apikey';
+
   final response = await http.get(Uri.parse(url));
-  // final url =
-  //    'https://newsapi.org/v2/everything?q=$query&sortBy=publishedAt&pageSize=10&apiKey=$apikey';
   if (response.statusCode == 200) {
     final jsonResponse = json.decode(response.body);
     final articlesJson = jsonResponse['articles'] as List;
@@ -87,39 +85,12 @@ Future<List<Article>> fetchArticlesBy(String query) async {
   if (response.statusCode == 200) {
     final jsonResponse = json.decode(response.body);
     final articlesJson = jsonResponse['articles'] as List;
+
     await Future.delayed(const Duration(seconds: 2));
     return articlesJson.map((json) => Article.fromJson(json)).toList();
   } else {
     throw Exception('Failed to load articles');
   }
-}
-
-// Fonction pour générer l'URL avec plusieurs centres d'intérêt
-String generateUrl(List<String> interests, String filter) {
-  String apiKey = "cc7e05da68ed43b6895773e3d1161727";
-  String baseUrl = 'https://newsapi.org/v2/';
-  String query = interests.join(' OR ');
-  String endpoint;
-
-  switch (filter) {
-    case 'popular':
-      endpoint =
-          'everything?q=$query&sortBy=popularity&pageSize=5&apiKey=$apiKey';
-      break;
-    case 'today':
-      String today = DateTime.now().toIso8601String().substring(0, 10);
-      endpoint =
-          'everything?q=$query&from=$today&to=$today&pageSize=5&apiKey=$apiKey';
-      break;
-    case 'recent':
-      endpoint =
-          'everything?q=$query&sortBy=publishedAt&pageSize=5&apiKey=$apiKey';
-      break;
-    default:
-      endpoint = '';
-  }
-
-  return baseUrl + endpoint;
 }
 
 Future<List<Article>> filterArticles(List<Article> articles) async {

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:topic/Views/show_article.dart';
 import '../models/article_model.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:flutter/services.dart';
 
 class FeedScreen extends StatefulWidget {
   const FeedScreen({super.key});
@@ -18,15 +18,10 @@ class _FeedScreenState extends State<FeedScreen> {
     "IA Générative",
     "Psychologie cognitive"
   ];
-  Future<void> fetchAndDisplayArticles(List<String> interests) async {
-    String recentUrl = generateUrl(interests, 'recent');
-    articles = fetchArticles(recentUrl);
-  }
-
   @override
   void initState() {
     super.initState();
-    fetchAndDisplayArticles(interets);
+    articles = fetchArticles('publishedAt', interets);
   }
 
   @override
@@ -106,12 +101,15 @@ class _FeedScreenState extends State<FeedScreen> {
               article.image,
               height: 130,
             ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                article.title,
+            ListTile(
+              title: Text(
+                article.title.toString(),
                 style:
                     const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+              subtitle: Text(
+                "il y a ${article.date} jours.",
+                style: TextStyle(fontStyle: FontStyle.italic, fontSize: 12),
               ),
             ),
             Padding(
@@ -119,7 +117,6 @@ class _FeedScreenState extends State<FeedScreen> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(article.date),
                   IconButton(
                     icon: const Icon(Icons.favorite_border),
                     onPressed: () {
@@ -141,18 +138,9 @@ class _FeedScreenState extends State<FeedScreen> {
                     ,
                   ), 
                   */
+                  IconButton(icon: const Icon(Icons.share), onPressed: () {}),
                   IconButton(
-                    icon: const Icon(Icons.share),
-                    onPressed: () {
-                      // Action à réaliser lors du clic sur le bouton Partager
-                    },
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.watch_later),
-                    onPressed: () {
-                      // Action à réaliser lors du clic sur le bouton Plus tard
-                    },
-                  ),
+                      icon: const Icon(Icons.watch_later), onPressed: () {}),
                 ],
               ),
             ),
@@ -160,12 +148,7 @@ class _FeedScreenState extends State<FeedScreen> {
         ),
       ),
       onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: ((context) => ShowArticle(article: article)),
-          ),
-        );
+        openBrowser(article.url);
       },
     );
   }

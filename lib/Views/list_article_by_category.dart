@@ -37,7 +37,7 @@ class _ListArticleByState extends State<ListArticleBy> {
         ],
       ),
       body: FutureBuilder<List<Article>>(
-          future: articles,
+          future: articles.then((value) => filterArticles(value)),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
@@ -52,65 +52,72 @@ class _ListArticleByState extends State<ListArticleBy> {
                 itemCount: articles.length,
                 itemBuilder: (context, index) {
                   final article = articles[index];
-                  return Card(
-                    child: Container(
-                      height: 150,
-                      width: MediaQuery.of(context).size.width,
-                      padding:
-                          const EdgeInsets.only(top: 10, left: 10, right: 10),
-                      child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Expanded(
-                              flex: 2,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: <Widget>[
-                                  Text(
-                                    article.title,
-                                    maxLines: 3,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: const TextStyle(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 10),
-                                      child: Row(children: <Widget>[
-                                        IconButton(
-                                          icon:
-                                              const Icon(Icons.favorite_border),
-                                          onPressed: () {
-                                            // Logique pour le like
-                                          },
-                                        ),
-                                        IconButton(
-                                          icon: const Icon(Icons.share),
-                                          onPressed: () {
-                                            // Logique pour les commentaires
-                                          },
-                                        ),
-                                        IconButton(
-                                          icon: const Icon(Icons.watch_later),
-                                          onPressed: () {
-                                            // Logique pour les commentaires
-                                          },
-                                        )
-                                      ]))
-                                ],
+                  return GestureDetector(
+                    child: Card(
+                      child: Container(
+                        //height: 200,
+                        width: MediaQuery.of(context).size.width,
+                        padding:
+                            const EdgeInsets.only(top: 10, left: 10, right: 10),
+                        child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Expanded(
+                                flex: 2,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: <Widget>[
+                                    Text(
+                                      article.title.toString(),
+                                      style: const TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 10),
+                                        child: Row(children: <Widget>[
+                                          Text(
+                                            "${article.date} j",
+                                            style: TextStyle(
+                                                fontStyle: FontStyle.italic,
+                                                fontSize: 12),
+                                          ),
+                                          IconButton(
+                                            icon: const Icon(
+                                                Icons.favorite_border),
+                                            onPressed: () {
+                                              // Logique pour le like
+                                            },
+                                          ),
+                                          IconButton(
+                                            icon: const Icon(Icons.share),
+                                            onPressed: () {
+                                              // Logique pour les commentaires
+                                            },
+                                          ),
+                                          IconButton(
+                                            icon: const Icon(Icons.watch_later),
+                                            onPressed: () {
+                                              // Logique pour les commentaires
+                                            },
+                                          )
+                                        ]))
+                                  ],
+                                ),
                               ),
-                            ),
-                            Expanded(
-                              flex: 1,
-                              child: Image.network(
-                                article.image,
-                                // fit: BoxFit.cover,
-                                height: 130,
-                              ),
-                            )
-                          ]),
+                              Expanded(
+                                flex: 1,
+                                child: Image.network(
+                                  article.image,
+                                  // fit: BoxFit.cover,
+                                  height: 130,
+                                ),
+                              )
+                            ]),
+                      ),
                     ),
+                    onTap: () => openBrowser(article.url),
                   );
                 },
               );

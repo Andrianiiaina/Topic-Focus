@@ -11,9 +11,7 @@ class ExploreScreen extends StatefulWidget {
 }
 
 class _ExploreScreenState extends State<ExploreScreen> {
-  late Future<List<Article>> recentArticles;
   late Future<List<Article>> popularArticles;
-  late Future<List<Article>> todayArticles;
   final List<String> interets = [
     "football",
     "Biologie de synthèse",
@@ -29,19 +27,24 @@ class _ExploreScreenState extends State<ExploreScreen> {
     "Cerveau social",
     "Psychologie positive",
   ];
-  Future<void> fetchAndDisplayArticles(List<String> interests) async {
-    String popularUrl = generateUrl(interests, 'popular');
-    popularArticles = fetchArticles(popularUrl);
-  }
-
   @override
   void initState() {
     super.initState();
-    fetchAndDisplayArticles(interets);
+    popularArticles = fetchArticles('popular', interets);
+  }
+
+  _search(String q) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: ((context) => ListArticleBy(query: q)),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
+    final TextEditingController _q = TextEditingController();
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -69,8 +72,9 @@ class _ExploreScreenState extends State<ExploreScreen> {
                 ),
                 child: Row(
                   children: [
-                    const Expanded(
+                    Expanded(
                       child: TextField(
+                        controller: _q,
                         decoration: InputDecoration(
                           hintText: 'Recherche...',
                           hintStyle: TextStyle(color: Colors.white),
@@ -78,14 +82,12 @@ class _ExploreScreenState extends State<ExploreScreen> {
                           contentPadding: EdgeInsets.symmetric(horizontal: 20),
                         ),
                         style: TextStyle(color: Colors.white),
+                        onSubmitted: _search,
                       ),
                     ),
                     IconButton(
                       icon: const Icon(Icons.filter_list, color: Colors.white),
-                      onPressed: () {
-                        // Action à réaliser lors du clic sur le bouton de filtrage
-                        // print('Bouton de filtrage cliqué');
-                      },
+                      onPressed: () {},
                     ),
                   ],
                 ),
@@ -114,12 +116,9 @@ class _ExploreScreenState extends State<ExploreScreen> {
                       itemCount: articles.length,
                       scrollDirection: Axis.horizontal,
                       itemBuilder: (context, index) {
-                        final article = articles[index];
+                        final Article article = articles[index];
                         // return CardHorizontal(article);
-                        return ImageCarda(
-                            title: article.title,
-                            subtitle: "",
-                            imageUrl: article.image);
+                        return ImageCarda(article: article);
                       },
                     );
                   }
@@ -181,58 +180,63 @@ class _ExploreScreenState extends State<ExploreScreen> {
 }
 
 class ImageCarda extends StatelessWidget {
-  final String title;
-  final String subtitle;
-  final String imageUrl;
+  final Article article;
 
-  const ImageCarda(
-      {super.key,
-      required this.title,
-      required this.subtitle,
-      required this.imageUrl});
+  const ImageCarda({super.key, required this.article});
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.all(10),
-      child: Stack(
-        children: [
-          Image.network(
-            imageUrl,
-            //width: double.infinity,
-            //height: 200,
-            fit: BoxFit.cover,
-          ),
-          Positioned(
-              bottom: 0,
-              left: 0,
-              right: 0,
-              child: Container(
-                padding: const EdgeInsets.all(10),
-                color: Colors.white24,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        shadows: [
-                          Shadow(
-                            blurRadius: 10.0,
-                            color: Colors.black,
-                            offset: Offset(2.0, 2.0),
-                          ),
-                        ],
+    return GestureDetector(
+      child: Card(
+        margin: const EdgeInsets.all(10),
+        child: Stack(
+          children: [
+            Image.network(
+              article.image,
+              //width: double.infinity,
+              //height: 200,
+              fit: BoxFit.cover,
+            ),
+            Positioned(
+                bottom: 0,
+                left: 0,
+                right: 0,
+                child: Container(
+                  padding: const EdgeInsets.all(0),
+                  color: Colors.white24,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ListTile(
+                        title: Text(
+                          article.title.toString(),
+                          style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              shadows: [
+                                Shadow(
+                                  blurRadius: 10.0,
+                                  color: Colors.black,
+                                  offset: Offset(2.0, 2.0),
+                                ),
+                              ]),
+                        ),
+                        subtitle: Text(
+                          "il y a ${article.date} jours.",
+                          style: TextStyle(
+                              fontStyle: FontStyle.italic,
+                              fontSize: 12,
+                              color: Colors.white),
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-              )),
-        ],
+                    ],
+                  ),
+                )),
+          ],
+        ),
       ),
+      onTap: () => openBrowser(article.url),
     );
   }
 }
