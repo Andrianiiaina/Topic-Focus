@@ -1,16 +1,39 @@
-# topic
+Topic Focus 🔍
 
-A new Flutter project.
+Description
+Topic Focus is a mobile social networking app designed to keep users up-to-date on topics they're passionate about. By utilizing a content-based article recommendation system, the app delivers a curated news feed that reflects each user's interests. Users can also search articles directly on the web and interact with friends by sharing and reacting to articles.
 
-## Getting Started
+Features
+Content-Based Recommendations: Tailored articles based on user preferences and interactions.
+Article Tracking: Records likes and comments to refine recommendations based on user engagement.
+News Search: Search for articles directly on the web.
+Social Network Elements: Post, comment, react, and interact with friends’ shared articles.
+Authentication: Secure user sign-up and login.
+Dynamic Recommendations: Continuously adapts to the user's interactions to enhance the relevance of recommended articles.
+Screenshots
+Add screenshots of the main feed, article recommendations, and social features.
 
-This project is a starting point for a Flutter application.
+Installation
+Prerequisites
+Flutter SDK for mobile development
+Django (server-side)
+MySQL database
+Setup
+Clone the repository:
+git clone https://github.com/Andrianiiaina/Topic-Focus.git
+Navigate to the project directory. 
+Install dependencies:
 
-A few resources to get you started if this is your first Flutter project:
+Flutter dependencies:
+flutter pub get
+Django dependencies:
+pip install -r requirements.txt
+Set up MySQL and configure Django settings for the database connection.
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+Retrieve NewsAPI credentials for article fetching and add them to your configuration.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+flutter run
+Technology Stack
+Flutter: Cross-platform mobile application development.
+Django: Backend development and REST API.
+MySQL: Data storage for users, preferences, and article interactions.
